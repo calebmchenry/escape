@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://fc1o7wjc1std"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_i75sd"]
+[ext_resource type="PackedScene" uid="uid://koa5ng5neu3p" path="res://scenes/chunk.tscn" id="2_s6qdh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mcj4u"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_hpr7g"]
+sky_material = SubResource("ProceduralSkyMaterial_mcj4u")
+
+[sub_resource type="Environment" id="Environment_0e0s0"]
+background_mode = 2
+sky = SubResource("Sky_hpr7g")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="Game" type="Node3D"]
+script = ExtResource("1_i75sd")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_0e0s0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.0235532, 0.499445, 0.240785, 0.855789, 0.457873, -0.438204, 0.516789, -0.735464, 0, 1.67922, 0)
+shadow_enabled = true
+
+[node name="Chunk" parent="." instance=ExtResource("2_s6qdh")]
+
+[node name="Characters" type="Node" parent="."]

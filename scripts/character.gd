@@ -72,6 +72,7 @@ func move(x: float, z: float) -> void:
 		velocity= Vector3(0, 0, 0)
 	else:
 		true_tile = Vector2(x, z)
+		$TrueTile.position = Vector3(x, .01, z)
 		direction = (transform.basis * (Vector3(x, position.y, z) - position)).normalized()
 		velocity = (Vector3(x, position.y, z) - position) / DURATION
 	

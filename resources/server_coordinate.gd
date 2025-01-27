@@ -6,8 +6,8 @@ class_name ServerCoordinate
 
 static func parse(d: Dictionary) -> ServerCoordinate:
 	var coord := ServerCoordinate.new()
-	assert(d.x is int)
-	assert(d.y is int)
+	assert(d.x == 0 or d.x is float)
+	assert(d.y == 0 or d.y is float)
 	coord.x = float(d.x)
 	coord.y = float(d.y)
 	return coord

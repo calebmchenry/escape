@@ -1,6 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://bf0coeecg15ln"]
+[gd_scene load_steps=6 format=3 uid="uid://bf0coeecg15ln"]
 
 [ext_resource type="Script" path="res://scripts/character.gd" id="1_si5js"]
+[ext_resource type="Texture2D" uid="uid://b2q46rtjqlwag" path="res://textures/checkered.png" id="2_dfrvh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fgcts"]
+albedo_texture = ExtResource("2_dfrvh")
 
 [sub_resource type="BoxMesh" id="BoxMesh_veg0q"]
 size = Vector3(0.5, 1, 0.5)
@@ -9,9 +13,11 @@ size = Vector3(0.5, 1, 0.5)
 size = Vector3(0.5, 1, 0.5)
 
 [node name="Character" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_si5js")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_fgcts")
 mesh = SubResource("BoxMesh_veg0q")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -23,4 +29,4 @@ shape = SubResource("BoxShape3D_j1tge")
 transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0)
 
 [node name="PlayerCamera" type="Camera3D" parent="h/v"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)

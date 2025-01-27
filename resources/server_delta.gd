@@ -5,6 +5,8 @@ class_name Delta
 
 static func parse(d: Dictionary) -> Delta:
 	var delta := Delta.new()
-	assert(d.characters is Array)
-	delta.characters = d.characters.map(func (c): CharacterDelta.parse(c))
+	var cs: Array[CharacterDelta] = []
+	for cd in d.characters:
+		cs.append(CharacterDelta.parse(cd))
+	delta.characters = cs
 	return delta

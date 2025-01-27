@@ -2,15 +2,13 @@ extends CharacterBody3D
 
 var m3_pressed: bool = false
 
-var start: Vector3
-var destination: Vector3
-var duration: float = 0.6
+var direction: Vector3
+var true_tile := Vector2(position.x, position.z)
+const DURATION: float = 0.6
+const gravity = 9.1
 
 var character_id: String
 
-var radius: float = 2:
-	set(value):
-		radius = clamp(value, 1, 20)
 var phi: float = 0
 var theta: float = 70:
 	set(value):
@@ -21,8 +19,16 @@ var right: bool = false
 var up: bool = false
 var down: bool = false
 
-func _process(delta: float) -> void:
-	self.position += (destination - start) * (delta / duration)
+#func done_moving() -> bool:
+	## P = start + t * direction
+	#return ((position - start) / velocity) >= 1
+
+func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+	move_and_slide()
+	var desired_angle = atan2(direction.x, direction.z)
+	$MeshInstance3D.rotation.y = lerp_angle($MeshInstance3D.rotation.y, desired_angle, .1)
 	var h = $h
 	var v = $h/v
 	if left:
@@ -33,10 +39,11 @@ func _process(delta: float) -> void:
 		v.rotation_degrees.x = clamp(v.rotation_degrees.x - 1, -90, -20)
 	if down:
 		v.rotation_degrees.x = clamp(v.rotation_degrees.x + 1, -90, -20)
-	$h/v/PlayerCamera.position.z = radius
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventPanGesture:
+		$h/v/PlayerCamera.position.z = clamp($h/v/PlayerCamera.position.z + event.delta.y, 1, 20)
 	if Input.is_action_just_pressed("leftarrow"): 
 		left = true
 	if Input.is_action_just_pressed("rightarrow"):
@@ -47,10 +54,10 @@ func _input(event: InputEvent) -> void:
 		down = true
 	if event.is_action_pressed("wheelup"): 
 		print("wheel up")
-		radius -= 1
+		$h/v/PlayerCamera.position.z = clamp($h/v/PlayerCamera.position.z - 1, 1, 20)
 	if event.is_action_pressed("wheeldown"): 
 		print("wheel down")
-		radius += 1
+		$h/v/PlayerCamera.position.z = clamp($h/v/PlayerCamera.position.z + 1, 1, 20)
 	if Input.is_action_just_released("leftarrow"): 
 		left = false
 	if Input.is_action_just_released("rightarrow"):
@@ -61,7 +68,10 @@ func _input(event: InputEvent) -> void:
 		down = false
 	
 func move(x: float, z: float) -> void:
-	self.start = self.position
-	self.destination = Vector3(x, self.position.y, z)
-	$MeshInstance3D.look_at(self.destination, Vector3(0, 1000, 0))
+	if(true_tile == Vector2(x, z)):
+		velocity= Vector3(0, 0, 0)
+	else:
+		true_tile = Vector2(x, z)
+		direction = (transform.basis * (Vector3(x, position.y, z) - position)).normalized()
+		velocity = (Vector3(x, position.y, z) - position) / DURATION
 	

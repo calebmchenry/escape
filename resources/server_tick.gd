@@ -9,4 +9,5 @@ static func parse(d: Dictionary) -> Tick:
 	assert(d.tick)
 	st.tick = d.tick
 	assert(d.delta is Dictionary)
+	st.delta = Delta.parse(d.delta)
 	return st

@@ -6,6 +6,8 @@ class_name CharacterDelta
 
 static func parse(d: Dictionary) -> CharacterDelta:
 	var character := CharacterDelta.new()
-	assert(d.characterId)
+	assert(d.characterId is String)
 	character.id = d.characterId
+	assert(d.position is Dictionary)
+	character.position = ServerCoordinate.parse(d.position)
 	return character

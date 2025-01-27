@@ -29,13 +29,14 @@ func _process(delta: float) -> void:
 		query.from = camera.project_ray_origin(get_viewport().get_mouse_position())
 		query.to = query.from + camera.project_ray_normal(get_viewport().get_mouse_position()) * 1000
 		var result = get_world_3d().direct_space_state.intersect_ray(query)
-		print(result)
+		if !result.has("position"):
+			print("Failed to get position from ray cast:", result)
+			return
 		var actionId = JSON.stringify({
 			"x": round(result.position.x),
 			"y": round(result.position.z)
 		})
 		var payload = JSON.stringify({"actionId": actionId})
-		print("payload:", payload)
 		_client.send(payload.to_utf8_buffer())
 		
 
@@ -43,7 +44,6 @@ func _handle_client_connected() -> void:
 	print("Client connected to server.")
 	var rng = RandomNumberGenerator.new()
 	var pid = str(rng.randi_range(1, 10000))
-	print("token: ", pid)
 	var payload := {"token": pid}
 	var str := JSON.stringify(payload)
 	var message := str.to_utf8_buffer()
@@ -53,32 +53,34 @@ func _handle_client_connected() -> void:
 	$Characters.add_child(c)
 
 func _handle_client_data(data: PackedByteArray) -> void:
-	var tick = JSON.parse_string(data.get_string_from_utf8())
-	if not tick:
-		print("i don't know what this is:", data.get_string_from_utf8())
-		return
-	for character_delta in tick.delta.characters:
-		var exists := $Characters.get_children().any(func (n):
-			if n is Character:
-				return n.character_id == character_delta.characterId
-			return false
-		)
-		if not exists:
-			var c := character_scene.instantiate()
-			c.character_id = character_delta.characterId
-			$Characters.add_child(c)
+	var utf8 := data.get_string_from_utf8()
+	var splits := utf8.split("\n", false)
+	for s in splits:
+		var json = JSON.parse_string(s)
+		if json == null:
+			print("Failed to parse tick json:", s, str, splits)
+		var tick := Tick.parse(json)
+		if tick == null:
+			print("Failed to parse tick:", s)
+			return
+		for character_delta in tick.delta.characters:
+			var exists := $Characters.get_children().any(func (n):
+				if n is Character:
+					return n.character_id == character_delta.id
+				return false
+			)
+			if not exists:
+				var c := character_scene.instantiate()
+				c.character_id = character_delta.id
+				$Characters.add_child(c)
+			for node in $Characters.get_children():
+				if node is Character and node.character_id == character_delta.id:
+					node.move(float(character_delta.position.x), float(character_delta.position.y))
+					
 		for node in $Characters.get_children():
-			print("node: ", node.character_id)
-			print("delta :", character_delta)
-			if node is Character and node.character_id == character_delta.characterId:
-				node.move(float(character_delta.position.x), float(character_delta.position.y))
-				
-	for node in $Characters.get_children():
-		if node is Character:
-			if tick.delta.characters.map(func (c): c.characterId).has(node.character_id):
-				$Characters.remove_child(node)
-	
-	
+			if node is Character:
+				if tick.delta.characters.map(func (c): c.id).has(node.character_id):
+					$Characters.remove_child(node)
 
 func _handle_client_disconnected() -> void:
 	print("Client disconnected from server.")

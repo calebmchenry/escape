@@ -14,7 +14,7 @@ func NewObstacles() *Obstacles {
 
 // key concats the string values of the two coorcinates with a ":".
 // The key for 1,0 and 0,0 is the same as the key for 0,0 1,0
-func (o *Obstacles) key(c1, c2 *Coordinate) string {
+func (o *Obstacles) key(c1, c2 Coordinate) string {
 	normal := fmt.Sprintf("%s:%s", c2.String(), c1.String())
 	reverse := fmt.Sprintf("%s:%s", c2.String(), c1.String())
 	if c2.WestOf(c1) {
@@ -32,11 +32,11 @@ func (o *Obstacles) key(c1, c2 *Coordinate) string {
 	return normal
 }
 
-func (o *Obstacles) Obstructed(c1, c2 *Coordinate) bool {
+func (o *Obstacles) Obstructed(c1, c2 Coordinate) bool {
 	return o.obstructions[o.key(c1, c2)]
 }
 
-func (o *Obstacles) Obstruct(c1, c2 *Coordinate) {
+func (o *Obstacles) Obstruct(c1, c2 Coordinate) {
 	if !c1.Orthogonal(c2) {
 		return
 	}
@@ -47,7 +47,7 @@ func (o *Obstacles) Obstruct(c1, c2 *Coordinate) {
 	o.obstructions[k] = true
 }
 
-func (o *Obstacles) clear(c1, c2 *Coordinate) {
+func (o *Obstacles) clear(c1, c2 Coordinate) {
 	if !c1.Orthogonal(c2) {
 		return
 	}

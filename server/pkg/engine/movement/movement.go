@@ -1,12 +1,12 @@
 package movement
 
 type state struct {
-	coord *Coordinate
-	path  []*Coordinate
+	coord Coordinate
+	path  []Coordinate
 }
 
-func makeState(p []*Coordinate, t *Coordinate) state {
-	newPath := make([]*Coordinate, len(p))
+func makeState(p []Coordinate, t Coordinate) state {
+	newPath := make([]Coordinate, len(p))
 	copy(newPath, p)
 	newPath = append(newPath, t)
 	return state{
@@ -15,8 +15,8 @@ func makeState(p []*Coordinate, t *Coordinate) state {
 	}
 }
 
-func Path(o *Obstacles, start *Coordinate, destination *Coordinate) []*Coordinate {
-	queue := []state{{coord: start, path: []*Coordinate{}}}
+func Path(o *Obstacles, start Coordinate, destination Coordinate) []Coordinate {
+	queue := []state{{coord: start, path: []Coordinate{}}}
 	processed := make(map[string]bool)
 
 	for len(queue) != 0 {
@@ -33,7 +33,7 @@ func Path(o *Obstacles, start *Coordinate, destination *Coordinate) []*Coordinat
 			return value.path
 		}
 
-		orthogonals := []*Coordinate{
+		orthogonals := []Coordinate{
 			tile.West(),
 			tile.East(),
 			tile.South(),
@@ -73,5 +73,5 @@ func Path(o *Obstacles, start *Coordinate, destination *Coordinate) []*Coordinat
 			queue = append(queue, makeState(value.path, tile.NorthEast()))
 		}
 	}
-	return []*Coordinate{}
+	return []Coordinate{}
 }

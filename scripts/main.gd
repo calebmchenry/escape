@@ -32,11 +32,10 @@ func _process(delta: float) -> void:
 		if !result.has("position"):
 			print("Failed to get position from ray cast:", result)
 			return
-		var actionId = JSON.stringify({
-			"x": round(result.position.x),
-			"y": round(result.position.z)
-		})
-		var payload = JSON.stringify({"actionId": actionId})
+		print(result.position)
+		var target_id: String = str(round(result.position.x)) +","+ str(round(result.position.z))
+		print(target_id)
+		var payload = JSON.stringify({"action": "move", "targetId": target_id})
 		_client.send(payload.to_utf8_buffer())
 		
 
@@ -63,23 +62,26 @@ func _handle_client_data(data: PackedByteArray) -> void:
 		if tick == null:
 			print("Failed to parse tick:", s)
 			return
-		for character_delta in tick.delta.characters:
+		var players: Array = tick.npcs.duplicate()
+		players.append(tick.player)
+		for delta in players:
 			var exists := $Characters.get_children().any(func (n):
 				if n is Character:
-					return n.character_id == character_delta.id
+					return n.character_id == delta.id
 				return false
 			)
 			if not exists:
 				var c := character_scene.instantiate()
-				c.character_id = character_delta.id
+				c.character_id = delta.id
 				$Characters.add_child(c)
 			for node in $Characters.get_children():
-				if node is Character and node.character_id == character_delta.id:
-					node.move(float(character_delta.position.x), float(character_delta.position.y))
+				if node is Character and node.character_id == delta.id:
+					print(delta.position.x, delta.position.y)
+					node.move(float(delta.position.x), float(delta.position.y))
 					
 		for node in $Characters.get_children():
 			if node is Character:
-				if tick.delta.characters.map(func (c): c.id).has(node.character_id):
+				if tick.npcs.map(func (c): c.id).has(node.character_id):
 					$Characters.remove_child(node)
 
 func _handle_client_disconnected() -> void:

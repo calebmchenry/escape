@@ -78,12 +78,12 @@ func (s *SocketServer) HandleConnection(conn net.Conn) {
 	defer conn.Close()
 	defer s.game.Unsubscribe(auth.Token)
 	for {
-		var msg SocketMessage
-		err = dec.Decode(&msg)
+		var command ClientCommand
+		err = dec.Decode(&command)
 		if err != nil {
 			fmt.Printf("Error while decoding message: %s\n", err)
 			return
 		}
-		s.game.Act(auth.Token, msg.ActionID)
+		s.game.Act(auth.Token, command.Action, command.TargetID, command.SrcID)
 	}
 }

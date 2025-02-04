@@ -6,8 +6,8 @@ import (
 	"webl-fun/pkg/engine/movement"
 )
 
-func assertPathEquality(t *testing.T, want, got []*movement.Coordinate) {
-	equal := slices.CompareFunc(want, got, func(a *movement.Coordinate, b *movement.Coordinate) int {
+func assertPathEquality(t *testing.T, want, got []movement.Coordinate) {
+	equal := slices.CompareFunc(want, got, func(a movement.Coordinate, b movement.Coordinate) int {
 		if a.Equals(b) {
 			return 0
 		}
@@ -18,13 +18,13 @@ func assertPathEquality(t *testing.T, want, got []*movement.Coordinate) {
 	}
 }
 
-func want(coords ...*movement.Coordinate) []*movement.Coordinate {
+func want(coords ...movement.Coordinate) []movement.Coordinate {
 	return coords
 }
 
 func TestPath(t *testing.T) {
 	o := movement.NewObstacles()
-	start := &movement.Coordinate{X: 0, Y: 0}
+	start := movement.Coordinate{X: 0, Y: 0}
 	got := movement.Path(o, start, start)
 
 	if len(got) != 0 {
@@ -34,7 +34,7 @@ func TestPath(t *testing.T) {
 
 func TestPathAdjacent(t *testing.T) {
 	o := movement.NewObstacles()
-	start := &movement.Coordinate{X: 0, Y: 0}
+	start := movement.Coordinate{X: 0, Y: 0}
 
 	// orthogonal
 	got := movement.Path(o, start, start.West())
@@ -59,7 +59,7 @@ func TestPathAdjacent(t *testing.T) {
 
 func TestPathAdjacentDistance2(t *testing.T) {
 	o := movement.NewObstacles()
-	start := &movement.Coordinate{X: 0, Y: 0}
+	start := movement.Coordinate{X: 0, Y: 0}
 
 	w := start.West()
 	e := start.East()
